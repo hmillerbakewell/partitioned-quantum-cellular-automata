@@ -54,7 +54,7 @@ class Automaton:
     @property
     def combined_circuit(self) -> qiskit.QuantumCircuit:
         """Combine preparation and update circuit."""
-        return self.preparation_circuit + self.update_circuit
+        return self.preparation_circuit.compose(self.update_circuit)
 
     def _tick(self) -> None:
         """Update the state without returning anything."""
