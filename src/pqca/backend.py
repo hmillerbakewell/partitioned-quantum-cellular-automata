@@ -2,15 +2,18 @@
 
 from typing import List, Callable
 import qiskit as qskt
+from qiskit_ibm_runtime import SamplerV2 as Sampler, QiskitRuntimeService, IBMBackend
 from qiskit_aer import AerSimulator
+from qiskit_ibm_runtime.fake_provider import FakeManilaV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from . import exceptions
 
 
-def qiskit(backend=AerSimulator()) -> Callable[[qskt.QuantumCircuit], List[int]]:
+def qiskit(backend: IBMBackend = FakeManilaV2()) -> Callable[[qskt.QuantumCircuit], List[int]]:
     """Transform a qiskit backend into a backend suitable for an Automaton.
 
     Args:
-        backend (qisket backend, optional): A qiskit backend. Defaults to qiskit.Aer.get_backend("qasm_simulator").
+        backend (qisket backend, optional): A qiskit backend. Defaults to Aer.
 
     Raises:
         exceptions.BackendError: Any non-successful result will be raised as an exception.
@@ -20,11 +23,13 @@ def qiskit(backend=AerSimulator()) -> Callable[[qskt.QuantumCircuit], List[int]]
     """
     def run_circuit_on_backend(circuit: qskt.QuantumCircuit) -> List[int]:
         circuit.measure_all()
-        results = backend.run(circuit, shots=1).result()
-        if results.success:
-            final_state_as_string = list(results.get_counts(circuit).keys())[0]
-            return [int(x) for x in final_state_as_string[::-1]]
-        raise exceptions.BackendError(results.status)
+        sampler = Sampler(mode=backend)
+        pm = generate_preset_pass_manager(
+            backend=backend, optimization_level=1)
+        isa_circuit = pm.run(circuit)
+        results = sampler.run([isa_circuit], shots=1).result()
+        final_state_as_string = list(results[0].data.meas.get_counts())[0]
+        return [int(x) for x in final_state_as_string[::-1]]
     return run_circuit_on_backend
 
 
