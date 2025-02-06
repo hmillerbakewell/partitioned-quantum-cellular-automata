@@ -1,7 +1,7 @@
 """Simple, n-dimensional, extendable vector of ints."""
 
 from __future__ import annotations
-from typing import Callable, List
+from typing import Callable, List,Iterable
 
 
 class Vector:
@@ -12,9 +12,9 @@ class Vector:
 
     entries: List[int]
 
-    def __init__(self, entries: List[int] = None) -> Vector:
+    def __init__(self, entries: Iterable[int] | None = None):
         """Convert a list of ints into coordinates."""
-        self.entries = entries if entries is not None else []
+        self.entries = list(entries) if entries is not None else []
 
     def extend(self, next_entry: int) -> Vector:
         """Append the given entry to the end of the list of entries."""
@@ -32,8 +32,10 @@ class Vector:
         """Subtract two vectors."""
         return self.action(other, lambda x, y: x-y)
 
-    def __eq__(self, other: Vector) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Compare vectors component-wise."""
+        if not isinstance(other, Vector):
+            return False
         return self.entries == other.entries
 
     def __getitem__(self, item) -> int:

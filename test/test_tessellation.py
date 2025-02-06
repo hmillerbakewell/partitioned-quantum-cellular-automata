@@ -6,6 +6,7 @@ import re
 import pytest
 import pqca
 from pqca.vector import Vector
+import pqca.exceptions
 
 
 def test_create_one_dimensional():

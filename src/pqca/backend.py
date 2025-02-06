@@ -2,10 +2,11 @@
 
 from typing import List, Callable
 import qiskit as qskt
+from qiskit_aer import AerSimulator
 from . import exceptions
 
 
-def qiskit(backend=qskt.Aer.get_backend("qasm_simulator")) -> Callable[[qskt.QuantumCircuit], List[int]]:
+def qiskit(backend=AerSimulator()) -> Callable[[qskt.QuantumCircuit], List[int]]:
     """Transform a qiskit backend into a backend suitable for an Automaton.
 
     Args:
@@ -19,7 +20,7 @@ def qiskit(backend=qskt.Aer.get_backend("qasm_simulator")) -> Callable[[qskt.Qua
     """
     def run_circuit_on_backend(circuit: qskt.QuantumCircuit) -> List[int]:
         circuit.measure_all()
-        results = qskt.execute(circuit, backend, shots=1).result()
+        results = backend.run(circuit, shots=1).result()
         if results.success:
             final_state_as_string = list(results.get_counts(circuit).keys())[0]
             return [int(x) for x in final_state_as_string[::-1]]

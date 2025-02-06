@@ -3,6 +3,7 @@
 from typing import List, Callable
 from qiskit import QuantumCircuit
 import qiskit
+import qiskit.circuit
 from .update_frame import UpdateFrame
 
 
@@ -17,6 +18,12 @@ class Automaton:
 
     The evaluation of the circuit is performed by the supplied backend.
     """
+
+    state: List[int]
+    frames: List[UpdateFrame]
+    backend: Callable[[QuantumCircuit], List[int]]
+    update_instruction: List[qiskit.circuit.Instruction]
+    update_circuit: QuantumCircuit
 
     def __init__(self, initial_state: List[int],
                  frames: List[UpdateFrame], backend: Callable[[QuantumCircuit], List[int]]):
@@ -34,9 +41,9 @@ class Automaton:
         self.backend = backend
         frame_instructions = map(
             lambda f: f.full_circuit_instructions, self.frames)
-        self.update_instruction = [instruction for
-                                   instructions in frame_instructions for
-                                   instruction in instructions]
+        self.update_instruction = [instruction
+                                   for instructions in frame_instructions
+                                   for instruction in instructions]
 
         size = len(initial_state)
 

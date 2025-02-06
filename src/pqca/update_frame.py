@@ -58,7 +58,7 @@ def _wind_circuit_around_loop(circuit: QuantumCircuit, tessellation: Tessellatio
         for instruction, qargs, cargs in circuit.data:
             # Create a new instruction pointing at the correct qubits
             instruction_context = instruction, [
-                Qubit(qreg, cell[q.index]) for q in qargs], cargs
+                Qubit(qreg, cell[q._index]) for q in qargs], cargs
             next_column.append(instruction_context)
     return next_column
 

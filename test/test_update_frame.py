@@ -4,6 +4,7 @@
 import qiskit
 import pytest
 import pqca
+import pqca.exceptions
 
 
 def test_wind_circuit_around_loop():
