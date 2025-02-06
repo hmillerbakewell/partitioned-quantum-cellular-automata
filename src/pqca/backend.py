@@ -3,7 +3,6 @@
 from typing import List, Callable
 import qiskit as qskt
 from qiskit_ibm_runtime import SamplerV2 as Sampler, QiskitRuntimeService, IBMBackend
-from qiskit_aer import AerSimulator
 from qiskit_ibm_runtime.fake_provider import FakeManilaV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from . import exceptions
